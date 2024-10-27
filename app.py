@@ -64,7 +64,8 @@ if st.button("Predict Fertility"):
     predicted_probability = predictions[0][0] if predictions[0][0] >= 0.5 else 1 - predictions[0][0]
     
     st.success(f"Prediction: {predicted_class}")
-    st.write(f"Probability of being Fertile: {predicted_probability:.2f}")
+    # st.write(f"Probability of being Fertile: {predicted_probability:.2f}")
+    st.warning(f"Consider consulting to your doctor, results may not be accurate")
     
     # Example static accuracy value
     accuracy = 0.85  # Replace with your actual model's accuracy if available
@@ -80,8 +81,8 @@ if st.button("Predict Fertility"):
     else:
         st.write("No specific recommendations based on your inputs.")
 
-    # User feedback section
-    user_feedback = st.text_area("Share your experience or feedback:")
-    if st.button("Submit Feedback"):
-        st.success("Thank you for your feedback!")
+    # # User feedback section
+    # user_feedback = st.text_area("Share your experience or feedback:")
+    # if st.button("Submit Feedback"):
+    #     st.success("Thank you for your feedback!")
 
