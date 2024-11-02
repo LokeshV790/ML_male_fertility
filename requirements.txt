@@ -3,4 +3,5 @@ pandas         # For data handling and manipulation
 numpy          # For numerical operations
 scikit-learn   # If you're using any Scikit-Learn utilities
 tensorflow     # For loading and using the pre-trained model
+utils
 
