@@ -4,6 +4,43 @@ import tensorflow as tf
 from utils.input_processing import update_inputs
 from utils.recommendations import provide_recommendations
 from utils.translations import translations  # Import translations
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import tempfile
+
+# Function to generate PDF and store the file path in session state
+def generate_pdf_report(predicted_class, recommendations):
+    # Create a temporary file for the PDF
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    filename = temp_file.name
+    c = canvas.Canvas(filename, pagesize=letter)
+    width, height = letter
+
+    # Title
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(100, height - 50, "Male Fertility Prediction Report")
+
+    # Prediction result
+    c.setFont("Helvetica", 12)
+    c.drawString(100, height - 100, f"Prediction: {predicted_class}")
+
+    # Warning about result interpretation
+    c.setFont("Helvetica-Oblique", 10)
+    c.drawString(100, height - 140, "Note: This prediction is based on a machine learning model and")
+    c.drawString(100, height - 155, "should not be considered a definitive medical diagnosis.")
+    c.drawString(100, height - 170, "Please consult a healthcare provider for an accurate assessment.")
+
+    # Recommendations section
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(100, height - 210, "Recommendations:")
+    y = height - 230
+    c.setFont("Helvetica", 12)
+    for rec in recommendations:
+        c.drawString(120, y, f"- {rec}")
+        y -= 20
+
+    c.save()
+    return filename
 
 # Load the trained model
 model = tf.keras.models.load_model('model/fertitlity_dn.h5')
@@ -103,6 +140,19 @@ if st.button(lang_dict["submit"]):
             st.write(f"- {rec}")
     else:
         st.write(lang_dict["no_recommendations"])
+
+    # PDF generation and download button with session state
+    if 'pdf_path' not in st.session_state:
+        st.session_state.pdf_path = None
+
+    if st.button("Generate PDF Report"):
+        pdf_path = generate_pdf_report(predicted_class, recommendations)
+        st.session_state.pdf_path = pdf_path  # Store path in session state
+
+    # Display download button if PDF is generated
+    if st.session_state.pdf_path:
+        with open(st.session_state.pdf_path, "rb") as pdf_file:
+            st.download_button("Download Prediction Report", pdf_file, file_name="prediction_report.pdf", mime="application/pdf")
 
     # User feedback section
     st.write("---")
